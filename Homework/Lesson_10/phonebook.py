@@ -3,7 +3,7 @@ import sys
 import os
 
 def load_phonebook(filename):
-    """Завантаження телефонної книги з JSON ololo tratata Fkmjyf ij wt pf [thyz nen yfgcfyf"""
+    """Завантаження телефонної книги з JSON"""
     if os.path.exists(filename):
         with open(filename, "r", encoding="utf-8") as f:
             return json.load(f)
