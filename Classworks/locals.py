@@ -2,13 +2,13 @@
 
 def test():
     a = 125
-    b = 123
+    b = 'asb'    
     print(locals())
 test()
 
 while True:
     weather = input("What is the weather today? (type 'exit' to stop)").lower()
-
+    
     if weather == 'exit':
         print("Goodbye! See you later! 👋")
         break
@@ -18,6 +18,8 @@ while True:
         print("O! It's nice!😎")
     elif weather == 'windy':
         print('Brrrrr...💨')
+        print(locals())       # переміщала в різні місця
     else:
         print('But what about this weather?!🤔')
-print()   
+print() 
+  
