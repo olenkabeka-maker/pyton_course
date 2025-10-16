@@ -12,3 +12,4 @@ print(type(bdate-adate))
 #версія системи
 import sys      
 sys.version
+print(sys.version)
