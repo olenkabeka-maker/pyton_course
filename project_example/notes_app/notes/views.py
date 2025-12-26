@@ -1,5 +1,11 @@
 
-from django.http import HttpResponse
+from django.shortcuts import render
 
 def notes_view(request):
-    return HttpResponse("Привіт із програми Notes")
+    notes = [
+        {"title": "Перша нотатка", "text": "Купити молоко"},
+        {"title": "Друга нотатка", "text": "Повторити Django"},
+        {"title": "Третя нотатка", "text": "Прогулянка з собакою"}
+    ]
+
+    return render(request, "notes_app/index.html", {"notes": notes})
