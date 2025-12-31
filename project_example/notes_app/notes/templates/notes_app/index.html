@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Нотатки</title>
@@ -8,16 +8,21 @@
 </head>
 <body>
 
-<h1>Мої нотатки</h1>
+<h1 style="color: #c7ed33;">Нотатки</h1>
 
-<div class="notes">
-    {% for note in notes %}
-        <div class="note">
-            <h2>{{ note.title }}</h2>
-            <p>{{ note.text }}</p>
-        </div>
-    {% endfor %}
-</div>
+{% for note in notes %}
+    <div class="note">
+        <h3>{{ note.title }}</h3>
+        <p>{{ note.text }}</p>
+        <p><strong>Категорія:</strong> {{ note.category.title }}</p>
+
+        {% if note.reminder %}
+            <p><em>Нагадування: {{ note.reminder }}</em></p>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Нотаток поки немає</p>
+{% endfor %}
 
 </body>
 </html>

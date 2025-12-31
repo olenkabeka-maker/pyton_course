@@ -1,14 +1,14 @@
 
 from django.shortcuts import render
+from .models import Note
+
 
 def notes_view(request):
-    notes = [
-        {"title": "Перша нотатка", "text": "Купити молоко"},
-        {"title": "Друга нотатка", "text": "Поговорити з Сімою"},
-        {"title": "Третя нотатка", "text": "Прогулянка з собакою"}
-    ]
+    notes = Note.objects.select_related("category").all()
 
-    return render(request, "notes_app/index.html", {"notes": notes})
+    return render(request, "notes_app/index.html", {
+        "notes": notes
+    })
 
 def about(request):
-    return render(request, 'notes_app/about.html')
+    return render(request, "notes_app/about.html") 
