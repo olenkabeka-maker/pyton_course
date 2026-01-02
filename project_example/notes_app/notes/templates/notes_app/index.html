@@ -10,9 +10,37 @@
 
 <h1 style="color: #c7ed33;">Нотатки</h1>
 
+<div class="notes-header">
+    <a href="{% url 'note_create' %}" class="btn btn-add">+ Створити нотатку</a>
+</div>
+
+
+<form method="get" class="filter-form">
+    <input type="text" name="search" placeholder="Пошук за назвою">
+
+    <select name="category">
+        <option value="">Усі категорії</option>
+        {% for cat in categories %}
+            <option value="{{ cat.id }}">
+                {{ cat.title }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <input type="date" name="reminder">
+
+    <button type="submit" class="btn btn-primary">Фільтрувати</button>
+</form>
+
 {% for note in notes %}
     <div class="note">
-        <h3>{{ note.title }}</h3>
+
+        <h3>
+            <a href="{% url 'note_detail' note.id %}">
+            {{ note.title }}
+        </a>
+        </h3>
+
         <p>{{ note.text }}</p>
         <p><strong>Категорія:</strong> {{ note.category.title }}</p>
 
