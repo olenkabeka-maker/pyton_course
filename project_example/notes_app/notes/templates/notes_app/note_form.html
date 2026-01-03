@@ -1,23 +1,25 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <title>Створити нотатку</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
+<body class="page-bg">
 
-<h1>Створити нову нотатку</h1>
+<div class="form-wrapper">
+    <h1>Створити нову нотатку</h1>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
+    <form method="post" class="note-form">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-    <button type="submit" class="btn btn-primary">Зберегти</button>
-</form>
+        <button type="submit" class="btn btn-primary">Зберегти</button>
+    </form>
 
-<a href="{% url 'home' %}">← Назад до нотаток</a>
+    <a href="{% url 'home' %}" class="back-link">← Назад до нотаток</a>
+</div>
 
 </body>
 </html>
