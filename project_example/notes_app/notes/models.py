@@ -1,7 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class Category(models.Model):
     title = models.CharField(max_length=100)
+
     class Meta:
         verbose_name_plural = "categories"
 
@@ -10,6 +13,11 @@ class Category(models.Model):
 
 
 class Note(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notes"
+    )
     title = models.CharField(max_length=200)
     text = models.TextField()
     reminder = models.DateTimeField(null=True, blank=True)
@@ -20,4 +28,4 @@ class Note(models.Model):
     )
 
     def __str__(self):
-        return self.title + " " + str(self.id)
+        return f"{self.title} ({self.user.username})"

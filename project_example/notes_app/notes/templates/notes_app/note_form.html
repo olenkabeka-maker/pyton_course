@@ -1,25 +1,34 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <title>Створити нотатку</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="page-bg">
+{% extends "notes_app/base.html" %}
 
-<div class="form-wrapper">
-    <h1>Створити нову нотатку</h1>
+{% block title %}Створити нотатку{% endblock %}
 
-    <form method="post" class="note-form">
-        {% csrf_token %}
-        {{ form.as_p }}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-center">
+                    Створити нову нотатку
+                </h2>
 
-        <button type="submit" class="btn btn-primary">Зберегти</button>
-    </form>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
 
-    <a href="{% url 'home' %}" class="back-link">← Назад до нотаток</a>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            💾 Зберегти
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'home' %}" class="btn btn-link">
+                        ← Назад до нотаток
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

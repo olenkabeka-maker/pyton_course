@@ -2,8 +2,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Note, Category
 from .forms import NoteForm
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def notes_view(request):
     notes = Note.objects.select_related("category").all()
     categories = Category.objects.all()
@@ -31,6 +32,7 @@ def about(request):
     return render(request, "notes_app/about.html")
 
 
+@login_required
 def note_create(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
@@ -42,9 +44,9 @@ def note_create(request):
 
     return render(request, 'notes_app/note_form.html', {'form': form})
 
-
+@login_required
 def note_detail(request, pk):
-    note = get_object_or_404(Note, pk=pk)
+    note = get_object_or_404(Note, pk=pk, user=request.user)
 
     if request.method == 'POST':
         if 'delete' in request.POST:
