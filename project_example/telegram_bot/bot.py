@@ -12,13 +12,12 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
 from keyboards.main_menu import main_menu
+from keyboards.test_links import test_links
 from keyboards.violence_menu import violence_menu
 from handlers.violence import get_violence_text, get_detailed_text
-from handlers.help import get_help_text
+from handlers.help import get_help_text, show_help
 from texts.violence_texts import violence_texts
 
-#  Створюю бота
-application = ApplicationBuilder().token(BOT_TOKEN).build()
 
 # ===== /start =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -49,8 +48,7 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "🚨 Види насильства":
         await update.message.reply_text(get_violence_text(), reply_markup=violence_menu)
-    elif text == "🆘 Куди звернутися":
-        await update.message.reply_text(get_help_text(), reply_markup=main_menu)
+    
     elif text == "ℹ️ Про бота":
         await update.message.reply_text(
             "Цей бот створений, щоб підтримати тебе 💙\n"
@@ -58,6 +56,14 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Допомога існує.",
             reply_markup=main_menu
         )
+
+    elif text == "📝 Тестування":
+        await update.message.reply_text(
+            "📝 Це тестування допоможе вам визначити, чи є ознаки насильства у ваших стосунках 💔\n\n"
+            "Якщо тебе цікавить - натисни нижче 👇",
+            reply_markup=test_links
+    )
+
     else:
         # Передаємо обробку підменю насильства
         await handle_violence_buttons(update, context)
@@ -67,9 +73,14 @@ def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     # Додаємо хендлери
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons))
+    app.add_handler(CommandHandler("start", start))    # /start
 
+    #  підключаю інлайн-кнопки з посиланням
+
+    app.add_handler(MessageHandler(filters.TEXT & filters.Regex("^🆘 Куди звернутися$"), show_help))
+    
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons))  # інші кнопки
+    
     print("Бот запущений ✅")
     app.run_polling()
 
