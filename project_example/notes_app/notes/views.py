@@ -4,6 +4,7 @@ from .models import Note, Category
 from .forms import NoteForm
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def notes_view(request):
     notes = Note.objects.select_related("category").all()
