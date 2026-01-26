@@ -1,4 +1,5 @@
 from django.urls import path
+from .api_views import AnonymousStatCreate
 from django.contrib.auth import views as auth_views
 from .views import (
     notes_view,
@@ -27,4 +28,6 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name="logout"
     ),
+    # API для бота
+    path("api/statistics/", AnonymousStatCreate.as_view(), name="api_statistics"),
 ]

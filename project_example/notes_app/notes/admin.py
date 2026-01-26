@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Note, Category
+from .models import Note, Category, AnonymousStat
 
 @admin.action(description="Update remainder")
 def delete_remainder(modeladmin, request, queryset):
@@ -12,3 +12,4 @@ class NoteAdmin(admin.ModelAdmin):
 
 admin.site.register(Note, NoteAdmin)
 admin.site.register(Category)
+admin.site.register(AnonymousStat)

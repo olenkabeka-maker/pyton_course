@@ -29,3 +29,18 @@ class Note(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.user.username})"
+
+
+class AnonymousStat(models.Model):
+    GENDER_CHOICES = [
+        ("F", "Жінка"),
+        ("M", "Чоловік"),
+        ("NA", "Не вказано"),
+    ]
+
+    gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
+    age = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.gender}, {self.age}"

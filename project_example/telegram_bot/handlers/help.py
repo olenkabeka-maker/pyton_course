@@ -1,4 +1,4 @@
-from keyboards.help_links import help_links
+from telegram_bot.keyboards.help_links import help_links
 
 def get_help_text():
     return (
