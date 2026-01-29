@@ -49,16 +49,25 @@ async def test_gender_male():
 
 @pytest.mark.asyncio
 async def test_gender_unknown():
+    # ===== Підготовка =====
     update = MagicMock()
-    update.message = MagicMock()
     update.message.text = "🐱"
     update.message.reply_text = AsyncMock()
 
     context = MagicMock()
     context.user_data = {}
 
+    # ===== Дія =====
+    from telegram_bot.bot import GENDER
     result = await gender(update, context)
 
-    assert context.user_data["gender"] == "NA"
-    assert result == AGE
+    # ===== Перевірка =====
+    # Тепер ми перевіряємо, що в user_data НІЧОГО не записалося
+    assert "gender" not in context.user_data
+    
+    # Перевіряємо, що бот попросив уточнити
+    update.message.reply_text.assert_called_once_with("Будь ласка, введи Ж або Ч")
+    
+    # Перевіряємо, що ми залишилися на етапі вибору статі (GENDER)
+    assert result == GENDER
 

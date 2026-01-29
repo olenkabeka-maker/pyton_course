@@ -41,20 +41,25 @@ API_URL = "http://127.0.0.1:8000/api/statistics/"
 # /start — початок статистики
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info(f"/start від користувача {update.effective_user.id}")
+
+    context.user_data.clear()           # словник, який є між повідомленнями одного юзера, НЕ очищ.автомат., зберіг.після ConversationHandler.END
     await update.message.reply_text(
-        "Привіт 💙\nЩоб покращити статистику, скажи будь ласка свою стать (Ж/Ч)"
+        "Привіт 💙\n"
+        "Щоб покращити статистику, скажи будь ласка свою стать (Ж/Ч)"
     )
     return GENDER
 
 # Обробка статі
 async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
-    if text in GENDER_FEMALE:
+
+    if text in ["ж", "жінка", "f"]:
         context.user_data["gender"] = "F"
-    elif text in GENDER_MALE:
+    elif text in ["ч", "чоловік", "m"]:
         context.user_data["gender"] = "M"
     else:
-        context.user_data["gender"] = "NA"
+        await update.message.reply_text("Будь ласка, введи Ж або Ч")
+        return GENDER
 
     await update.message.reply_text("Вкажи свій вік цифрами:")
     return AGE
@@ -62,10 +67,9 @@ async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Обробка віку
 async def age(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        age = int(update.message.text)
-        context.user_data["age"] = age
+        context.user_data["age"] = int(update.message.text)
     except ValueError:
-        await update.message.reply_text("Вік потрібно вказати числом, спробуй ще раз:")
+        await update.message.reply_text("Вік потрібно вказати числом")
         return AGE
 
     # Відправляємо на Django API
@@ -73,20 +77,22 @@ async def age(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "gender": context.user_data["gender"],
         "age": context.user_data["age"]
     }
-    try:
-        response = requests.post(API_URL, json=payload)
-        if response.status_code == 201:
-            await update.message.reply_text("Дякую! Твоя анонімна статистика збережена.")
-        else:
-            await update.message.reply_text("Щось пішло не так, статистику не збережено.")
-    except Exception as e:
-        await update.message.reply_text(f"Помилка з’єднання з сервером: {e}")
 
-    # Після статистики показуємо головне меню
+    try:
+        response = requests.post(API_URL, json=payload, timeout=5)
+        if response.status_code == 201:
+            await update.message.reply_text("Дякую! Дані збережені 💙")
+        else:
+            await update.message.reply_text("Не вдалося зберегти статистику")
+    except Exception:
+        await update.message.reply_text("Сервер статистики недоступний")
+
+    # ✅ ВИХІД З CONVERSATION + МЕНЮ
     await update.message.reply_text(
         "Обери, що тебе цікавить 👇",
         reply_markup=main_menu
     )
+
     return ConversationHandler.END
 
 # /cancel — відміна
@@ -118,19 +124,27 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "🚨 Види насильства":
         await update.message.reply_text(get_violence_text(), reply_markup=violence_menu)
+    
     elif text == "ℹ️ Про бота":
         await update.message.reply_text(
             "Цей бот створений, щоб підтримати тебе 💙\n"
             "Ти не винна / не винен у насильстві.\nДопомога існує.",
             reply_markup=main_menu
         )
+
     elif text == "📝 Тестування":
         await update.message.reply_text(
             "📝 Це тестування допоможе вам визначити, чи є ознаки насильства у ваших стосунках 💔\n\n"
             "Якщо тебе цікавить - натисни нижче 👇",
             reply_markup=test_links
         )
+
+    # Тут додаю перевірку кнопки допомоги
+    elif "Куди звернутися" in text: 
+        await show_help(update, context)
+
     else:
+        # Якщо жодна кнопка не підійшла, перевіряє підменю насильства
         await handle_violence_buttons(update, context)
 
 # ================================
@@ -138,22 +152,24 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ================================
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
-
-    # ConversationHandler для збору статистики
+    # ConversationHandler — ПЕРШИЙ
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler("start", start)],
         states={
             GENDER: [MessageHandler(filters.TEXT & ~filters.COMMAND, gender)],
-            AGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, age)]
+            AGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, age)],
         },
-        fallbacks=[CommandHandler('cancel', cancel)]
+        fallbacks=[CommandHandler("cancel", cancel)],
     )
+
+    # 1. Спочатку ConversationHandler
     app.add_handler(conv_handler)
 
-    # Інші MessageHandler для кнопок
-    app.add_handler(MessageHandler(filters.TEXT & filters.Regex("^🆘 Куди звернутися$"), show_help))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons))
-
+    # 2. ПОТІМ меню - ДРУГЕ, тільки якщо розмова не активна, спрацює цей хендлер
+    app.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons)
+    )
+    
     print("Бот запущений ✅")
     app.run_polling()
 

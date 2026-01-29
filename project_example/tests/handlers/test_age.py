@@ -39,7 +39,7 @@ async def test_age_invalid_input():
 
     # Перевірка: бот має попросити спробувати ще раз і повернути стан AGE
     assert result == 1 # AGE
-    update.message.reply_text.assert_called_with("Вік потрібно вказати числом, спробуй ще раз:")
+    update.message.reply_text.assert_called_with("Вік потрібно вказати числом")
 
 
 # ===== Тест на помилку з’єднання =====
@@ -70,7 +70,7 @@ async def test_age_api_connection_error():
 
         # 2. Перевіряє перше повідомлення (про помилку)
         # calls[0][0] — це аргументи першого виклику
-        assert "Помилка з’єднання з сервером" in calls[0][0][0]
+        assert "Сервер статистики недоступний" in calls[0][0][0]
 
         # 3. Перевіряє друге повідомлення (головне меню)
         assert "Обери, що тебе цікавить 👇" in calls[1][0][0]
