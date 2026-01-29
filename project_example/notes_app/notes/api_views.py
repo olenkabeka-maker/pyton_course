@@ -14,8 +14,7 @@ class AnonymousStatCreate(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            update_statistics_note()
-
+            update_statistics_note()                # ось тут викликаю
             return Response(
                 {"message": "Дані збережено"},
                 status=status.HTTP_201_CREATED

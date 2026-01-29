@@ -30,6 +30,8 @@ logging.basicConfig(
 
 # ===== Стани для ConversationHandler =====
 GENDER, AGE = range(2)
+GENDER_FEMALE = ["ж", "жінка", "f"]
+GENDER_MALE = ["ч", "чоловік", "m"]
 API_URL = "http://127.0.0.1:8000/api/statistics/"
 
 # ================================
@@ -47,9 +49,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Обробка статі
 async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
-    if text in ["ж", "жінка", "f"]:
+    if text in GENDER_FEMALE:
         context.user_data["gender"] = "F"
-    elif text in ["ч", "чоловік", "m"]:
+    elif text in GENDER_MALE:
         context.user_data["gender"] = "M"
     else:
         context.user_data["gender"] = "NA"
